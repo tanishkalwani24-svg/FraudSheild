@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report a Scam — FraudShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner container">
+      <a href="index.html" class="logo">
+        <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+          <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient></defs>
+          <path d="M16 2 L29 7.5 L29 17 C29 24.5 23 30 16 32 C9 30 3 24.5 3 17 L3 7.5 Z" fill="url(#sg)"/>
+          <text x="16" y="22.5" text-anchor="middle" font-size="13" font-weight="900" fill="white" font-family="Inter,sans-serif">S</text>
+        </svg>
+        <span class="logo-text">Fraud<span class="accent">Shield</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html"><span data-i18n="nav.home">Home</span></a></li>
+        <li><a href="scan.html"><span data-i18n="nav.scan">Scan Message Now</span></a></li>
+        <li><a href="dashboard.html"><span data-i18n="nav.dashboard">Dashboard</span></a></li>
+        <li><a href="report.html" class="active"><span data-i18n="nav.report">Report Scam</span></a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="lang-toggle" title="Switch Language">हिंदी</button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark / light mode">🌙</button>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu">&#9776;</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 data-i18n="rep.page.h1">🚨 Report a Scam</h1>
+      <p data-i18n="rep.page.sub">Help protect other Indians — report fraud to official portals</p>
+    </div>
+  </div>
+
+  <section class="container report-section">
+
+    <!-- EMERGENCY BANNER -->
+    <div class="emergency-banner">
+      <div class="emergency-icon">🆘</div>
+      <div class="emergency-text">
+        <b data-i18n="rep.emerg.title">Lost money to a scam? Act immediately!</b>
+        <p data-i18n="rep.emerg.sub">Call <strong>1930</strong> (Cyber Crime Helpline) within the first hour to maximize chances of fund recovery.</p>
+      </div>
+      <a href="tel:1930" class="btn btn-danger" data-i18n="rep.emerg.btn">📞 Call 1930 Now</a>
+    </div>
+
+    <!-- REPORT PORTALS -->
+    <h2 class="section-title" data-i18n="rep.portals.title">Official Reporting Portals</h2>
+    <div class="portals-grid">
+      <div class="portal-card">
+        <div class="portal-logo">🏛️</div>
+        <h3 data-i18n="rep.p1.title">National Cyber Crime Reporting Portal</h3>
+        <p data-i18n="rep.p1.desc">Government of India's official portal for reporting cyber crimes including financial fraud.</p>
+        <div class="portal-steps">
+          <div class="portal-step"><span>1</span> <span data-i18n="rep.p1.s1">Visit the portal</span></div>
+          <div class="portal-step"><span>2</span> <span data-i18n="rep.p1.s2">Click "Report Cyber Crime"</span></div>
+          <div class="portal-step"><span>3</span> <span data-i18n="rep.p1.s3">Fill complaint form</span></div>
+          <div class="portal-step"><span>4</span> <span data-i18n="rep.p1.s4">Note complaint number</span></div>
+        </div>
+        <a href="https://cybercrime.gov.in" target="_blank" class="btn btn-primary" data-i18n="rep.p1.btn">Visit Portal →</a>
+      </div>
+
+      <div class="portal-card">
+        <div class="portal-logo">📡</div>
+        <h3 data-i18n="rep.p2.title">Chakshu Portal (TRAI)</h3>
+        <p data-i18n="rep.p2.desc">Report suspected fraud communications — SMS, calls, WhatsApp messages to TRAI's Sanchar Saathi.</p>
+        <div class="portal-steps">
+          <div class="portal-step"><span>1</span> <span data-i18n="rep.p2.s1">Open Chakshu Portal</span></div>
+          <div class="portal-step"><span>2</span> <span data-i18n="rep.p2.s2">Select communication type</span></div>
+          <div class="portal-step"><span>3</span> <span data-i18n="rep.p2.s3">Enter suspect number/details</span></div>
+          <div class="portal-step"><span>4</span> <span data-i18n="rep.p2.s4">Submit report</span></div>
+        </div>
+        <a href="https://sancharsaathi.gov.in/sfc/Home/sfc-complaint.jsp" target="_blank" class="btn btn-primary" data-i18n="rep.p2.btn">Report on Chakshu →</a>
+      </div>
+
+      <div class="portal-card">
+        <div class="portal-logo">📞</div>
+        <h3 data-i18n="rep.p3.title">1930 — Cyber Fraud Helpline</h3>
+        <p data-i18n="rep.p3.desc">India's national helpline for cyber financial fraud. Available 24/7 for immediate assistance.</p>
+        <div class="portal-steps">
+          <div class="portal-step"><span>1</span> <span data-i18n="rep.p3.s1">Dial 1930</span></div>
+          <div class="portal-step"><span>2</span> <span data-i18n="rep.p3.s2">Describe the fraud</span></div>
+          <div class="portal-step"><span>3</span> <span data-i18n="rep.p3.s3">Provide transaction details</span></div>
+          <div class="portal-step"><span>4</span> <span data-i18n="rep.p3.s4">Follow officer instructions</span></div>
+        </div>
+        <a href="tel:1930" class="btn btn-danger" data-i18n="rep.p3.btn">📞 Call 1930</a>
+      </div>
+
+      <div class="portal-card">
+        <div class="portal-logo">🏦</div>
+        <h3 data-i18n="rep.p4.title">Your Bank / Wallet</h3>
+        <p data-i18n="rep.p4.desc">Contact your bank immediately to freeze the transaction. UPI apps also have in-app reporting.</p>
+        <div class="portal-steps">
+          <div class="portal-step"><span>1</span> <span data-i18n="rep.p4.s1">Call bank helpline</span></div>
+          <div class="portal-step"><span>2</span> <span data-i18n="rep.p4.s2">Block linked cards/UPI</span></div>
+          <div class="portal-step"><span>3</span> <span data-i18n="rep.p4.s3">Raise chargeback request</span></div>
+          <div class="portal-step"><span>4</span> <span data-i18n="rep.p4.s4">File complaint in writing</span></div>
+        </div>
+        <div class="bank-numbers">
+          <span>SBI: 1800111109</span><span>HDFC: 18002586161</span><span>ICICI: 18001080</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK REPORT FORM -->
+    <div class="quick-report">
+      <h2 data-i18n="rep.form.title">📋 Quick Scam Report (Community Database)</h2>
+      <p class="section-sub" data-i18n="rep.form.sub">Help other users by adding this scam to our community database</p>
+      <form id="reportForm" class="report-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="rep.form.type">Scam Type *</label>
+            <select name="scamType" required>
+              <option value="" data-i18n="rep.form.sel.type">Select type...</option>
+              <option data-i18n="rep.form.opt.otp">OTP Scam</option>
+              <option data-i18n="rep.form.opt.kyc">KYC Scam</option>
+              <option data-i18n="rep.form.opt.upi">UPI Fraud</option>
+              <option data-i18n="rep.form.opt.fcc">Fake Customer Care</option>
+              <option data-i18n="rep.form.opt.lot">Lottery/Reward Scam</option>
+              <option data-i18n="rep.form.opt.inv">Investment Fraud</option>
+              <option data-i18n="rep.form.opt.phi">Phishing Link</option>
+              <option data-i18n="rep.form.opt.ref">Refund Scam</option>
+              <option data-i18n="rep.form.opt.oth">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label data-i18n="rep.form.platform">Platform Used</label>
+            <select name="platform">
+              <option value="" data-i18n="rep.form.sel.plat">Select...</option>
+              <option>SMS</option>
+              <option>WhatsApp</option>
+              <option>Email</option>
+              <option data-i18n="rep.form.opt.call">Phone Call</option>
+              <option>Telegram</option>
+              <option data-i18n="rep.form.opt.oth2">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="rep.form.id">Suspicious UPI ID / Phone / URL</label>
+          <input type="text" name="identifier" data-i18n="rep.form.id.ph" placeholder="e.g. kyc.hdfc@paytm or 9876543210" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="rep.form.desc">Describe the scam (optional)</label>
+          <textarea name="description" rows="4" data-i18n="rep.form.desc.ph" placeholder="How did they approach you? What did they ask for?"></textarea>
+        </div>
+        <div class="form-group">
+          <label data-i18n="rep.form.amount">Amount Demanded (₹)</label>
+          <input type="number" name="amount" placeholder="0" />
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="agreeAnon" name="anonymous" checked />
+          <label for="agreeAnon" data-i18n="rep.form.anon">Submit anonymously (no personal info collected)</label>
+        </div>
+        <button type="submit" class="btn btn-primary" data-i18n="rep.form.submit">Submit to Community Database</button>
+      </form>
+      <div id="reportSuccess" class="report-success" style="display:none">
+        <div class="success-icon">✅</div>
+        <h3 data-i18n="rep.success.title">Report Submitted!</h3>
+        <p data-i18n="rep.success.sub">Thank you for helping protect other Indians from this scam. Your report has been added to our community database.</p>
+        <a href="scan.html" class="btn btn-outline"><span data-i18n="nav.scan">Scan Message Now</span></a>
+      </div>
+    </div>
+
+    <!-- SAFETY GUIDE -->
+    <div class="safety-guide">
+      <h2 data-i18n="rep.guide.title">🛡️ What To Do If You've Been Scammed</h2>
+      <div class="safety-timeline">
+        <div class="timeline-item">
+          <div class="timeline-time" data-i18n="rep.t1.time">0–30 min</div>
+          <div class="timeline-content urgent">
+            <h4 data-i18n="rep.t1.title">Immediate Action</h4>
+            <ul>
+              <li data-i18n="rep.t1.l1">Call 1930 immediately</li>
+              <li data-i18n="rep.t1.l2">Contact your bank to freeze transactions</li>
+              <li data-i18n="rep.t1.l3">Change UPI PIN / Net Banking password</li>
+              <li data-i18n="rep.t1.l4">Don't make any more payments</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time" data-i18n="rep.t2.time">1–24 hrs</div>
+          <div class="timeline-content warning">
+            <h4 data-i18n="rep.t2.title">File Formal Complaint</h4>
+            <ul>
+              <li data-i18n="rep.t2.l1">File complaint at cybercrime.gov.in</li>
+              <li data-i18n="rep.t2.l2">Visit nearest police station</li>
+              <li data-i18n="rep.t2.l3">Get complaint acknowledgment number</li>
+              <li data-i18n="rep.t2.l4">Preserve all screenshots and messages</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time" data-i18n="rep.t3.time">1–7 days</div>
+          <div class="timeline-content normal">
+            <h4 data-i18n="rep.t3.title">Follow Up</h4>
+            <ul>
+              <li data-i18n="rep.t3.l1">Follow up with bank chargeback</li>
+              <li data-i18n="rep.t3.l2">Track complaint status online</li>
+              <li data-i18n="rep.t3.l3">Report on Chakshu portal (TRAI)</li>
+              <li data-i18n="rep.t3.l4">Alert family and friends</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>© 2024 FraudShield · <a href="index.html"><span data-i18n="nav.home">Home</span></a> · <a href="scan.html"><span data-i18n="nav.scan">Scan Message Now</span></a> · Emergency: <a href="tel:1930">1930</a></p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/sound-lang.js"></script>
+  <script src="assets/js/report.js"></script>
+</body>
+</html>
+
+
+

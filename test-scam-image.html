@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Generate Scam Test Image</title>
+<style>
+  body { background: #111; display: flex; flex-direction: column; align-items: center; padding: 30px; font-family: sans-serif; color: #fff; gap: 20px; }
+  h1 { font-size: 18px; color: #4ade80; }
+  p  { font-size: 13px; color: #aaa; text-align: center; max-width: 500px; }
+  canvas { border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.8); }
+  .btn { background: #22c55e; color: #000; border: none; padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+  .btn:hover { background: #4ade80; }
+</style>
+</head>
+<body>
+<h1>🧪 FraudShield — Scam Test Image Generator</h1>
+<p>This generates a realistic fake scam SMS screenshot. Download it and upload to FraudShield to test the image scanner.</p>
+
+<canvas id="c" width="420" height="680"></canvas>
+<button class="btn" onclick="download()">⬇️ Download Test Image</button>
+<p style="color:#f87171">This is a FAKE image for testing only. These are not real bank messages.</p>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+function draw() {
+  // ── Background: WhatsApp style ──────────────────────────────────────
+  // Wallpaper bg
+  ctx.fillStyle = '#e5ddd5';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle tile pattern
+  ctx.fillStyle = 'rgba(0,0,0,0.03)';
+  for (let y = 0; y < H; y += 20) {
+    for (let x = 0; x < W; x += 20) {
+      ctx.fillRect(x, y, 10, 10);
+    }
+  }
+
+  // ── Status bar ───────────────────────────────────────────────────────
+  ctx.fillStyle = '#056654';
+  ctx.fillRect(0, 0, W, 28);
+  ctx.fillStyle = '#fff';
+  ctx.font = '11px Arial';
+  ctx.fillText('9:41 AM', 12, 19);
+  ctx.fillText('▌▌▌▌  ⚡ 87%', W - 90, 19);
+
+  // ── Chat header ──────────────────────────────────────────────────────
+  ctx.fillStyle = '#075e54';
+  ctx.fillRect(0, 28, W, 58);
+
+  // Back arrow
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 18px Arial';
+  ctx.fillText('←', 12, 64);
+
+  // Avatar circle
+  ctx.beginPath();
+  ctx.arc(58, 57, 20, 0, Math.PI * 2);
+  ctx.fillStyle = '#25d366';
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('S', 58, 63);
+  ctx.textAlign = 'left';
+
+  // Contact name
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 15px Arial';
+  ctx.fillText('SBI-ALERT', 86, 54);
+  ctx.font = '12px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.fillText('+91 98765 00001', 86, 70);
+
+  // ── Message bubble 1: KYC Scam ───────────────────────────────────────
+  roundRect(ctx, 12, 100, 340, 165, 10, '#fff');
+
+  ctx.fillStyle = '#25d366';
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('SBI-ALERT', 26, 120);
+
+  ctx.fillStyle = '#111';
+  ctx.font = '13px Arial';
+  const lines1 = [
+    'Dear Customer, your SBI KYC',
+    'has EXPIRED. Your account will',
+    'be BLOCKED in 24 hours.',
+    '',
+    'Update NOW: sbi-kyc-update.tk',
+    'Enter OTP + UPI PIN to verify.',
+  ];
+  lines1.forEach((l, i) => ctx.fillText(l, 26, 138 + i * 19));
+
+  ctx.fillStyle = '#e53935';
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('⚠ Ignore = Account Blocked!', 26, 253);
+
+  ctx.fillStyle = '#888';
+  ctx.font = '11px Arial';
+  ctx.fillText('9:38 AM  ✓✓', 295, 258);
+
+  // ── Message bubble 2: Lottery Scam ──────────────────────────────────
+  roundRect(ctx, 12, 278, 360, 155, 10, '#fff');
+
+  ctx.fillStyle = '#25d366';
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('HDFC-BANK', 26, 298);
+
+  ctx.fillStyle = '#111';
+  ctx.font = '13px Arial';
+  const lines2 = [
+    'Congratulations! You WON',
+    '₹25,00,000 in HDFC Lucky Draw!',
+    '',
+    'Claim: hdfc-prize-claim.xyz',
+    'Pay ₹499 processing fee via:',
+    'UPI: prize.claim99@ybl',
+  ];
+  lines2.forEach((l, i) => ctx.fillText(l, 26, 316 + i * 19));
+
+  ctx.fillStyle = '#888';
+  ctx.font = '11px Arial';
+  ctx.fillText('9:39 AM  ✓✓', 310, 425);
+
+  // ── Message bubble 3: OTP request ───────────────────────────────────
+  roundRect(ctx, 12, 448, 340, 130, 10, '#fff');
+
+  ctx.fillStyle = '#25d366';
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('PAYTM-SUPPORT', 26, 468);
+
+  ctx.fillStyle = '#111';
+  ctx.font = '13px Arial';
+  const lines3 = [
+    'Your PayTM wallet suspended!',
+    'Share OTP 847291 with agent',
+    'Call: 9999900001 immediately',
+    'or lose all your money.',
+  ];
+  lines3.forEach((l, i) => ctx.fillText(l, 26, 486 + i * 19));
+
+  ctx.fillStyle = '#888';
+  ctx.font = '11px Arial';
+  ctx.fillText('9:41 AM  ✓', 290, 572);
+
+  // ── Bottom bar ───────────────────────────────────────────────────────
+  ctx.fillStyle = '#f0f0f0';
+  ctx.fillRect(0, 630, W, 50);
+  ctx.fillStyle = '#aaa';
+  ctx.font = '13px Arial';
+  ctx.fillText('  Type a message...', 10, 660);
+
+  // ── Watermark ────────────────────────────────────────────────────────
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.font = '10px Arial';
+  ctx.fillText('TEST IMAGE — FraudShield Scam Detector', 90, H - 8);
+}
+
+function roundRect(ctx, x, y, w, h, r, fill) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function download() {
+  const link = document.createElement('a');
+  link.download = 'scam-kyc-otp-test.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+draw();
+</script>
+</body>
+</html>

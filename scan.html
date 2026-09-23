@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan Message — FraudShield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner container">
+      <a href="index.html" class="logo">
+        <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+          <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#4ade80"/></linearGradient></defs>
+          <path d="M16 2 L29 7.5 L29 17 C29 24.5 23 30 16 32 C9 30 3 24.5 3 17 L3 7.5 Z" fill="url(#sg)"/>
+          <text x="16" y="22.5" text-anchor="middle" font-size="13" font-weight="900" fill="white" font-family="Inter,sans-serif">S</text>
+        </svg>
+        <span class="logo-text">Fraud<span class="accent">Shield</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html"><span data-i18n="nav.home">Home</span></a></li>
+        <li><a href="scan.html" class="active"><span data-i18n="nav.scan">Scan Message Now</span></a></li>
+        <li><a href="dashboard.html"><span data-i18n="nav.dashboard">Dashboard</span></a></li>
+        <li><a href="report.html"><span data-i18n="nav.report">Report Scam</span></a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="lang-toggle" title="Switch Language">हिंदी</button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark / light mode">🌙</button>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu">&#9776;</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 data-i18n="scan.page.h1">🔍 Scan for Scams</h1>
+      <p data-i18n="scan.page.sub">Paste a message, upload a screenshot, or enter a phone / UPI / link to check instantly</p>
+    </div>
+  </div>
+
+  <section class="scan-section container">
+
+    <!-- INPUT TABS -->
+    <div class="scan-tabs">
+      <button class="tab-btn active" data-tab="text" data-i18n="scan.tab.msg">📝 Paste Message</button>
+      <button class="tab-btn" data-tab="screenshot" data-i18n="scan.tab.img">📷 Upload Screenshot</button>
+      <button class="tab-btn" data-tab="identifier" data-i18n="scan.tab.id">🔗 Phone / UPI / Link</button>
+    </div>
+
+    <div class="scan-card">
+
+      <!-- TAB: TEXT -->
+      <div class="tab-panel active" id="tab-text">
+        <label class="input-label" data-i18n="scan.label.msg">Paste SMS, WhatsApp, or Email content</label>
+        <textarea id="msgInput" class="scan-textarea" rows="7" placeholder="e.g. Dear customer, your KYC has expired. Please send ₹499 to kyc@ybl to reactivate your account. Share OTP 7823 to confirm."></textarea>
+        <div class="char-count"><span id="charCount">0</span> characters</div>
+        <div class="sample-msgs">
+          <span class="sample-label" data-i18n="scan.sample.label">Try a sample:</span>
+          <button class="sample-btn" data-msg="Congratulations! You've won ₹10,00,000 in Lucky Draw. Send ₹500 processing fee to prize@upi. Call 9876543210 now!" data-i18n="scan.sample.lottery">Lottery Scam</button>
+          <button class="sample-btn" data-msg="Your HDFC Bank KYC expired. Update now: bit.ly/hdfc-kyc or your account will be blocked in 24 hours. Share OTP to verify." data-i18n="scan.sample.kyc">KYC Phishing</button>
+          <button class="sample-btn" data-msg="Hi, I'm from PayTM support. Your account shows suspicious activity. Please share your OTP 4521 to block the transaction." data-i18n="scan.sample.otp">OTP Fraud</button>
+          <button class="sample-btn" data-msg="Dear customer, to receive your ₹2500 refund, scan this QR code or enter UPI PIN to complete transaction." data-i18n="scan.sample.refund">Refund Scam</button>
+        </div>
+      </div>
+
+      <!-- TAB: SCREENSHOT -->
+      <div class="tab-panel" id="tab-screenshot">
+        <label class="input-label" data-i18n="scan.label.img">Upload a screenshot of the suspicious message</label>
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📷</div>
+          <p data-i18n="scan.drop.title">Drag &amp; drop your screenshot here</p>
+          <p class="upload-sub" data-i18n="scan.drop.sub">or click to browse (PNG, JPG, WEBP)</p>
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <button class="btn btn-outline" data-i18n="scan.drop.btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+        </div>
+        <div class="upload-preview" id="uploadPreview" style="display:none">
+          <img id="previewImg" src="" alt="Preview" />
+          <button class="btn btn-sm btn-outline" id="clearImg">✕ Remove</button>
+        </div>
+        <div class="ocr-note" data-i18n="scan.ocr">📌 Text will be extracted automatically from the image (OCR simulation)</div>
+      </div>
+
+      <!-- TAB: IDENTIFIER -->
+      <div class="tab-panel" id="tab-identifier">
+        <label class="input-label" data-i18n="scan.label.id">Enter a suspicious identifier</label>
+        <div class="id-input-group">
+          <select id="idType" class="id-select">
+            <option value="upi">UPI ID (abc@paytm)</option>
+            <option value="phone">Phone Number</option>
+            <option value="email">Email Address</option>
+            <option value="url">URL / Link</option>
+          </select>
+          <input type="text" id="idValue" class="id-input" placeholder="e.g. rewards@okaxis" />
+        </div>
+        <div class="id-examples">
+          <span class="sample-label" data-i18n="scan.sample.label">Try a sample:</span>
+          <button class="sample-btn" data-id="upi" data-val="kyc.verify999@ybl">kyc.verify999@ybl</button>
+          <button class="sample-btn" data-id="url" data-val="http://hdfc-bank-update.tk/login">Fake Bank URL</button>
+          <button class="sample-btn" data-id="phone" data-val="9999999999">Suspicious No.</button>
+        </div>
+      </div>
+
+      <!-- SCAN BUTTON -->
+      <div class="scan-action">
+        <button class="btn btn-primary btn-xl" id="scanBtn">
+          <span id="scanBtnText" data-i18n="scan.btn.analyze">🔍 Analyze for Scams</span>
+          <span id="scanSpinner" class="spinner" style="display:none"></span>
+        </button>
+        <p class="scan-privacy" data-i18n="scan.privacy">🔒 Your data is never stored. Analysis is done locally.</p>
+      </div>
+
+    </div>
+
+    <!-- RESULT PANEL (hidden until scan) -->
+    <div id="resultPanel" style="display:none"></div>
+
+    <!-- WHAT WE EXTRACT -->
+    <div class="extract-info">
+      <h3 data-i18n="scan.extract.title">What FraudShield Extracts &amp; Checks</h3>
+      <div class="extract-grid">
+        <div class="extract-item"><span>💳</span><b data-i18n="scan.ext.upi">UPI ID</b><p data-i18n="scan.ext.upi.desc">Checks against known fraudulent payment handles</p></div>
+        <div class="extract-item"><span>₹</span><b data-i18n="scan.ext.amt">Amount</b><p data-i18n="scan.ext.amt.desc">Flags unusually urgent payment requests</p></div>
+        <div class="extract-item"><span>📞</span><b data-i18n="scan.ext.phone">Phone Number</b><p data-i18n="scan.ext.phone.desc">Cross-references reported scam numbers</p></div>
+        <div class="extract-item"><span>📧</span><b data-i18n="scan.ext.email">Email</b><p data-i18n="scan.ext.email.desc">Detects spoofed or suspicious sender domains</p></div>
+        <div class="extract-item"><span>🔗</span><b data-i18n="scan.ext.url">URLs/Links</b><p data-i18n="scan.ext.url.desc">Checks for phishing domains and URL shorteners</p></div>
+        <div class="extract-item"><span>🔑</span><b data-i18n="scan.ext.kw">Keywords</b><p data-i18n="scan.ext.kw.desc">OTP, KYC, PIN, urgent, reward, blocked, verify</p></div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p data-i18n="footer.copy">© 2024 FraudShield · <a href="index.html" data-i18n="nav.home">Home</a> · <a href="report.html" data-i18n="nav.report">Report Scam</a> · Emergency: <a href="tel:1930">1930</a></p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js?v=10"></script>
+  <script src="assets/js/sound-lang.js?v=10"></script>
+  <!-- Production backend URL — set this to your Cloud Run URL after deployment -->
+  <!-- Leave empty string '' to use same-origin (local Flask) -->
+  <script>window.FRAUDSHIELD_BACKEND_URL = '';</script>
+  <script src="assets/js/gemini.js?v=10"></script>
+  <script src="assets/js/scanner.js?v=11"></script>
+
+</body>
+</html>
+
+
+

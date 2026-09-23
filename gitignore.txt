@@ -1,0 +1,39 @@
+# FraudShield — Python
+__pycache__/
+*.py[cod]
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Secrets
+backend/.env
+!backend/.env.example
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML model caches
+.EasyOCR/
+models/
+*.pt
+*.pth
+
+# Node
+node_modules/
+.firebase/
+
+# IDE
+.vscode/
+.idea/

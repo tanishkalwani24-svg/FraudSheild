@@ -1,0 +1,598 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FraudShield App Architecture — How Real Notifications Work</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <style>
+    .arch-hero { background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); color:white; padding:56px 0 40px; }
+    .arch-hero h1 { font-size:36px; font-weight:900; margin-bottom:10px; }
+    .arch-hero p  { color:#c4b5fd; font-size:16px; max-width:600px; }
+    .arch-section { padding:52px 0; }
+    .arch-section-alt { background:#f7f8fa; }
+    .arch-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .arch-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+    .card {
+      background:white; border:1px solid #e5e7eb; border-radius:14px;
+      padding:24px; box-shadow:0 1px 3px rgba(0,0,0,.07);
+    }
+    .card-icon { font-size:32px; margin-bottom:12px; }
+    .card h3 { font-size:16px; font-weight:700; margin-bottom:8px; color:#1a1a2e; }
+    .card p  { font-size:13px; color:#6b7280; line-height:1.6; }
+    .card ul { margin-top:8px; display:flex; flex-direction:column; gap:5px; }
+    .card ul li { font-size:13px; color:#374151; padding-left:16px; position:relative; }
+    .card ul li::before { content:'•'; position:absolute; left:0; color:#6c63ff; }
+    .platform-card { border-top:4px solid; }
+    .platform-android { border-color:#3ddc84; }
+    .platform-ios     { border-color:#007aff; }
+    .platform-web     { border-color:#6c63ff; }
+    .android-tag { background:#e8fdf0; color:#16a34a; }
+    .ios-tag     { background:#e5f0ff; color:#1d4ed8; }
+    .web-tag     { background:#ede9fe; color:#4f46e5; }
+    .tag { display:inline-block; padding:3px 10px; border-radius:5px; font-size:11px; font-weight:700; margin-bottom:10px; }
+    .flow-wrap { display:flex; flex-direction:column; gap:0; }
+    .flow-step { display:flex; gap:20px; align-items:flex-start; padding-bottom:0; }
+    .flow-left { display:flex; flex-direction:column; align-items:center; width:52px; flex-shrink:0; }
+    .flow-num {
+      width:44px; height:44px; border-radius:50%; background:#6c63ff; color:white;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; font-weight:800; flex-shrink:0; z-index:1;
+    }
+    .flow-line { width:2px; flex:1; min-height:32px; background:#e5e7eb; margin-top:0; }
+    .flow-step:last-child .flow-line { display:none; }
+    .flow-content { flex:1; padding-bottom:28px; }
+    .flow-content h4 { font-size:15px; font-weight:700; color:#1a1a2e; margin-bottom:6px; }
+    .flow-content p  { font-size:13px; color:#6b7280; line-height:1.6; }
+    .flow-content .code-pill {
+      display:inline-block; background:#1e1b4b; color:#a78bfa;
+      padding:4px 12px; border-radius:6px; font-size:12px; font-family:monospace;
+      margin-top:6px; margin-right:4px;
+    }
+    .notif-demo { background:#1a1a2e; border-radius:16px; padding:20px 24px; margin-top:12px; }
+    .notif-demo-title { font-size:12px; color:#9ca3af; margin-bottom:12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+    .notif-card {
+      background:rgba(255,255,255,.08); border-radius:12px; padding:14px 16px;
+      border:1px solid rgba(255,255,255,.1); margin-bottom:10px;
+    }
+    .notif-card:last-child { margin-bottom:0; }
+    .notif-app { font-size:11px; color:#a78bfa; font-weight:700; margin-bottom:5px; }
+    .notif-title { font-size:13px; font-weight:700; color:#f3f4f6; margin-bottom:4px; }
+    .notif-body  { font-size:12px; color:#d1d5db; line-height:1.5; margin-bottom:8px; }
+    .notif-actions { display:flex; gap:8px; }
+    .notif-action-btn {
+      padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; border:none;
+    }
+    .notif-btn-primary { background:#6c63ff; color:white; }
+    .notif-btn-secondary { background:rgba(255,255,255,.15); color:white; }
+    .permission-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:16px; }
+    .permission-table th { text-align:left; padding:10px 14px; background:#f7f8fa; border-bottom:2px solid #e5e7eb; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.4px; color:#6b7280; }
+    .permission-table td { padding:12px 14px; border-bottom:1px solid #e5e7eb; color:#374151; }
+    .permission-table tr:last-child td { border-bottom:none; }
+    .perm-yes { color:#16a34a; font-weight:700; }
+    .perm-partial { color:#d97706; font-weight:700; }
+    .perm-no  { color:#dc2626; font-weight:700; }
+    .tech-stack { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .stack-item { display:flex; gap:14px; align-items:flex-start; background:white; border:1px solid #e5e7eb; border-radius:10px; padding:16px; }
+    .stack-icon { font-size:28px; flex-shrink:0; }
+    .stack-info h4 { font-size:14px; font-weight:700; margin-bottom:4px; color:#1a1a2e; }
+    .stack-info p  { font-size:12px; color:#6b7280; }
+    .timeline-h { display:flex; gap:0; overflow-x:auto; padding-bottom:8px; }
+    .tl-item { display:flex; flex-direction:column; align-items:center; min-width:140px; }
+    .tl-dot { width:14px; height:14px; border-radius:50%; background:#6c63ff; margin:0 auto 8px; flex-shrink:0; }
+    .tl-bar { height:4px; flex:1; background:#e5e7eb; align-self:flex-start; margin-top:5px; width:100%; }
+    .tl-phase { font-size:11px; font-weight:700; color:#6c63ff; text-transform:uppercase; margin-bottom:4px; text-align:center; }
+    .tl-label { font-size:12px; color:#374151; text-align:center; padding:0 8px; }
+    .highlight-box { background:linear-gradient(135deg,#1e1b4b,#312e81); border-radius:14px; padding:28px 32px; color:white; }
+    .highlight-box h3 { font-size:20px; font-weight:800; color:#c4b5fd; margin-bottom:16px; }
+    .highlight-box ul { display:flex; flex-direction:column; gap:10px; }
+    .highlight-box ul li { font-size:14px; color:#e5e7eb; padding-left:20px; position:relative; }
+    .highlight-box ul li::before { content:'✓'; position:absolute; left:0; color:#a78bfa; font-weight:700; }
+    @media(max-width:768px){
+      .arch-grid-3,.arch-grid-2,.tech-stack { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner container">
+      <a href="index.html" class="logo">
+        <span class="logo-shield">🛡️</span>
+        <span class="logo-text">Fraud<span class="accent">Shield</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="scan.html">Scan Now</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="report.html">Report Scam</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark / light mode">🌙</button>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu">&#9776;</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="arch-hero">
+    <div class="container">
+      <div class="tag" style="background:rgba(108,99,255,.3);color:#c4b5fd;margin-bottom:14px">📱 App Architecture Blueprint</div>
+      <h1>How FraudShield Sends Real<br/>Scam Notifications</h1>
+      <p>A complete technical breakdown of how a real mobile app reads your SMS, calls, and links — and fires an instant alert before you lose money.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 1: THE PROBLEM -->
+  <section class="arch-section container">
+    <div style="margin-bottom:40px">
+      <h2 style="font-size:28px;font-weight:800;margin-bottom:10px">The Core Challenge</h2>
+      <p style="color:#6b7280;font-size:15px;max-width:640px">A website can only scan messages you manually paste. A real app reads messages <b>automatically in the background</b> — the moment they arrive — and shows an alert without you doing anything.</p>
+    </div>
+    <div class="arch-grid-3">
+      <div class="card" style="border-top:4px solid #dc2626">
+        <div class="card-icon">📩</div>
+        <h3>SMS / WhatsApp</h3>
+        <p>App listens for new SMS messages using an OS background service, scans text instantly, fires notification if suspicious.</p>
+      </div>
+      <div class="card" style="border-top:4px solid #d97706">
+        <div class="card-icon">📞</div>
+        <h3>Incoming Calls</h3>
+        <p>App reads caller ID, checks it against known scam number databases, and shows a warning overlay on the call screen.</p>
+      </div>
+      <div class="card" style="border-top:4px solid #6c63ff">
+        <div class="card-icon">🔗</div>
+        <h3>Links & URLs</h3>
+        <p>When you tap any link, a background scan checks if it's a phishing domain before your browser even opens it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: HOW IT WORKS STEP BY STEP -->
+  <section class="arch-section arch-section-alt">
+    <div class="container">
+      <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">How It Works — Step by Step</h2>
+      <p style="color:#6b7280;margin-bottom:36px;font-size:15px">What happens the moment a scam message hits your phone</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start">
+        <div class="flow-wrap">
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>📩 Message Arrives</h4>
+              <p>An SMS or WhatsApp message lands on your phone. The OS delivers it to all registered listeners.</p>
+              <span class="code-pill">SMS_RECEIVED broadcast</span>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>🧩 Background Service Wakes Up</h4>
+              <p>FraudShield's background service catches the broadcast even when the app is closed. No user action needed.</p>
+              <span class="code-pill">BroadcastReceiver</span>
+              <span class="code-pill">WorkManager</span>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>🧠 AI Engine Scans Text</h4>
+              <p>The scam detection engine runs locally on your device — no internet needed. Checks for OTP requests, UPI IDs, urgency words, phishing links, and 7+ scam patterns.</p>
+              <span class="code-pill">On-device ML / Rule engine</span>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>📊 Risk Score Calculated</h4>
+              <p>A score from 0–100 is generated in milliseconds. If score ≥ 31, a notification is immediately triggered.</p>
+              <span class="code-pill">&lt; 100ms latency</span>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>🔔 Notification Fired</h4>
+              <p>An alert appears on your lock screen, notification tray, and as a heads-up banner — with the risk score and [Check Details] button.</p>
+              <span class="code-pill">NotificationManager</span>
+              <span class="code-pill">PendingIntent</span>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="flow-left"><div class="flow-num">6</div><div class="flow-line"></div></div>
+            <div class="flow-content">
+              <h4>📱 Tap → Full Report Opens</h4>
+              <p>Tapping the notification opens FraudShield directly on the result screen showing why the message was flagged, safety advice, and report options.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- NOTIFICATION DEMO -->
+        <div>
+          <div class="notif-demo">
+            <div class="notif-demo-title">📱 What appears on your phone</div>
+
+            <div class="notif-card">
+              <div class="notif-app">🛡️ FraudShield · just now</div>
+              <div class="notif-title">🔴 Very High Risk — 92/100</div>
+              <div class="notif-body">"Your HDFC KYC expired. Pay ₹199 to kyc.update@ybl to reactivate within 24 hours. Share OTP to confirm."<br/><b style="color:#fca5a5">UPI + OTP + KYC Scam detected</b></div>
+              <div class="notif-actions">
+                <button class="notif-action-btn notif-btn-primary">Check Details</button>
+                <button class="notif-action-btn notif-btn-secondary">Dismiss</button>
+              </div>
+            </div>
+
+            <div class="notif-card">
+              <div class="notif-app">🛡️ FraudShield · Incoming Call Warning</div>
+              <div class="notif-title">⚠️ Suspicious Caller — +91 98765 43210</div>
+              <div class="notif-body">This number has been reported <b style="color:#fdba74">47 times</b> as Fake Customer Care / Banking Fraud.<br/>Do NOT share OTP or PIN.</div>
+              <div class="notif-actions">
+                <button class="notif-action-btn notif-btn-primary">View Report</button>
+                <button class="notif-action-btn notif-btn-secondary">Block</button>
+              </div>
+            </div>
+
+            <div class="notif-card">
+              <div class="notif-app">🛡️ FraudShield · Link Warning</div>
+              <div class="notif-title">🎣 Phishing Link Detected</div>
+              <div class="notif-body">http://hdfc-bank-update.tk/login<br/><b style="color:#fca5a5">This URL mimics HDFC Bank. Do NOT enter your credentials.</b></div>
+              <div class="notif-actions">
+                <button class="notif-action-btn notif-btn-primary">Block Link</button>
+                <button class="notif-action-btn notif-btn-secondary">Ignore</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: PLATFORM COMPARISON -->
+  <section class="arch-section container">
+    <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">Android vs iOS vs Web</h2>
+    <p style="color:#6b7280;margin-bottom:32px;font-size:15px">Each platform has different levels of access to SMS, calls, and links</p>
+
+    <div class="arch-grid-3">
+      <div class="card platform-card platform-android">
+        <div class="tag android-tag">Android</div>
+        <div class="card-icon">🤖</div>
+        <h3>Full Access — Best for FraudShield</h3>
+        <ul>
+          <li>Read SMS in background ✅</li>
+          <li>Intercept calls before answer ✅</li>
+          <li>Scan links from any app ✅</li>
+          <li>Works even when app is closed ✅</li>
+          <li>Run background services ✅</li>
+        </ul>
+        <p style="margin-top:14px;font-size:12px;color:#6b7280">Built with: <b>Android SDK (Kotlin/Java)</b> or <b>React Native / Flutter</b></p>
+      </div>
+
+      <div class="card platform-card platform-ios">
+        <div class="tag ios-tag">iOS (iPhone)</div>
+        <div class="card-icon">🍎</div>
+        <h3>Limited — Only Call & Link Filtering</h3>
+        <ul>
+          <li>Read SMS in background ❌ (blocked by Apple)</li>
+          <li>Call Directory Extension ✅ (flag callers)</li>
+          <li>Safari Content Blocker ✅ (block phishing)</li>
+          <li>Background services very limited ⚠️</li>
+          <li>Push via APNs server ✅</li>
+        </ul>
+        <p style="margin-top:14px;font-size:12px;color:#6b7280">Built with: <b>Swift / React Native</b>, CallKit, MessageFilter</p>
+      </div>
+
+      <div class="card platform-card platform-web">
+        <div class="tag web-tag">Web (PWA)</div>
+        <div class="card-icon">🌐</div>
+        <h3>Manual Only — Our Current Website</h3>
+        <ul>
+          <li>Read SMS ❌ (browser can't access SMS)</li>
+          <li>Read calls ❌</li>
+          <li>Paste &amp; scan manually ✅</li>
+          <li>Browser Push Notifications ✅ (with permission)</li>
+          <li>Install as app on home screen ✅ (PWA)</li>
+        </ul>
+        <p style="margin-top:14px;font-size:12px;color:#6b7280">Built with: <b>HTML/CSS/JS</b> + Service Worker (PWA)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: ANDROID PERMISSIONS -->
+  <section class="arch-section arch-section-alt">
+    <div class="container">
+      <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">Android App Permissions Needed</h2>
+      <p style="color:#6b7280;margin-bottom:24px;font-size:15px">These are declared in <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px">AndroidManifest.xml</code></p>
+
+      <table class="permission-table">
+        <thead>
+          <tr>
+            <th>Permission</th>
+            <th>Used For</th>
+            <th>SMS</th>
+            <th>Calls</th>
+            <th>Links</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>RECEIVE_SMS</code></td>
+            <td>Automatically receive new SMS messages in background</td>
+            <td class="perm-yes">✅ Required</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>READ_SMS</code></td>
+            <td>Read existing SMS from inbox to scan old messages</td>
+            <td class="perm-yes">✅ Required</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>READ_PHONE_STATE</code></td>
+            <td>Detect incoming call and read caller ID number</td>
+            <td>—</td>
+            <td class="perm-yes">✅ Required</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>CALL_LOG</code></td>
+            <td>Check if number was previously reported as scam</td>
+            <td>—</td>
+            <td class="perm-partial">⚠️ Optional</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>INTERNET</code></td>
+            <td>Sync scam database, report new scams to server</td>
+            <td class="perm-yes">✅ Required</td>
+            <td class="perm-yes">✅ Required</td>
+            <td class="perm-yes">✅ Required</td>
+          </tr>
+          <tr>
+            <td><code>POST_NOTIFICATIONS</code></td>
+            <td>Show scam alert notifications (Android 13+)</td>
+            <td class="perm-yes">✅ Required</td>
+            <td class="perm-yes">✅ Required</td>
+            <td class="perm-yes">✅ Required</td>
+          </tr>
+          <tr>
+            <td><code>FOREGROUND_SERVICE</code></td>
+            <td>Keep the monitor service alive in background</td>
+            <td class="perm-yes">✅ Required</td>
+            <td class="perm-yes">✅ Required</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>BIND_ACCESSIBILITY_SERVICE</code></td>
+            <td>Scan links clicked in WhatsApp / Telegram</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="perm-partial">⚠️ Optional</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 5: TECH STACK -->
+  <section class="arch-section container">
+    <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">Recommended Tech Stack</h2>
+    <p style="color:#6b7280;margin-bottom:28px;font-size:15px">How to actually build the FraudShield mobile app</p>
+
+    <div class="tech-stack">
+      <div class="stack-item">
+        <div class="stack-icon">⚛️</div>
+        <div class="stack-info">
+          <h4>React Native (Recommended)</h4>
+          <p>Write one codebase, deploy on Android AND iOS. Use <b>react-native-sms-retriever</b> for SMS reading on Android. Works with Expo for rapid prototyping.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🐦</div>
+        <div class="stack-info">
+          <h4>Flutter (Alternative)</h4>
+          <p>Google's cross-platform framework. Use <b>telephony</b> plugin for SMS and <b>flutter_phone_state</b> for call detection. Beautiful UI out of the box.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🤖</div>
+        <div class="stack-info">
+          <h4>Native Android (Kotlin)</h4>
+          <p>Most powerful option. Full access to all Android APIs. Use <b>BroadcastReceiver</b> + <b>WorkManager</b> for robust background scanning. Best performance.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🧠</div>
+        <div class="stack-info">
+          <h4>On-Device AI (TensorFlow Lite)</h4>
+          <p>Run the scam detection model <b>locally on device</b> — no internet required, zero privacy risk, instant response. TFLite model can be under 2MB.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🔥</div>
+        <div class="stack-info">
+          <h4>Firebase (Backend)</h4>
+          <p><b>Firebase Cloud Messaging (FCM)</b> for server-push notifications. <b>Firestore</b> for real-time scam database sync across all users. <b>Firebase Auth</b> for accounts.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">🌐</div>
+        <div class="stack-info">
+          <h4>PWA (Quick MVP)</h4>
+          <p>Our current website can be made installable as a <b>Progressive Web App</b>. Add a <b>Service Worker</b> + <b>manifest.json</b> — users install it from browser, get push notifications.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: HOW CALL DETECTION WORKS -->
+  <section class="arch-section arch-section-alt">
+    <div class="container">
+      <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">📞 How Call Scam Detection Works</h2>
+      <p style="color:#6b7280;margin-bottom:32px;font-size:15px">When someone calls you, FraudShield checks the number before you even answer</p>
+
+      <div class="arch-grid-2">
+        <div>
+          <div class="flow-wrap">
+            <div class="flow-step">
+              <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+              <div class="flow-content">
+                <h4>Phone Rings</h4>
+                <p>Android fires <code>PHONE_STATE</code> broadcast with caller's number.</p>
+                <span class="code-pill">TelephonyManager.CALL_STATE_RINGING</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+              <div class="flow-content">
+                <h4>FraudShield Wakes Up</h4>
+                <p>Background receiver intercepts the number — works even when app is closed.</p>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+              <div class="flow-content">
+                <h4>Number Checked</h4>
+                <p>Number checked against local scam DB + live Chakshu/community database via API.</p>
+                <span class="code-pill">Local cache</span>
+                <span class="code-pill">REST API</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+              <div class="flow-content">
+                <h4>Warning Overlay Shown</h4>
+                <p>A heads-up notification or full-screen overlay appears <b>while the phone is still ringing</b> — you see the risk before answering.</p>
+                <span class="code-pill">Heads-up Notification</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notif-demo" style="height:fit-content">
+          <div class="notif-demo-title">📞 Incoming Call Screen</div>
+          <div style="background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);border-radius:12px;padding:16px;margin-bottom:12px">
+            <div style="font-size:11px;color:#fca5a5;font-weight:700;margin-bottom:8px">🛡️ FraudShield WARNING</div>
+            <div style="font-size:18px;font-weight:800;color:white;margin-bottom:4px">+91 98765 43210</div>
+            <div style="font-size:13px;color:#fca5a5;margin-bottom:10px">🔴 Reported 47 times as <b>Fake Bank Customer Care</b></div>
+            <div style="font-size:12px;color:#d1d5db;margin-bottom:12px">Do NOT share OTP, PIN, or any personal details. Hang up and call your bank directly on the official number.</div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;background:#dc2626;border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;color:white">📵 Block &amp; Reject</div>
+              <div style="flex:1;background:rgba(255,255,255,.15);border-radius:8px;padding:8px;text-align:center;font-size:12px;font-weight:700;color:white">Answer Anyway</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#6b7280;text-align:center">This appears automatically — no app interaction needed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7: ROADMAP -->
+  <section class="arch-section container">
+    <h2 style="font-size:28px;font-weight:800;margin-bottom:8px">📅 Build Roadmap</h2>
+    <p style="color:#6b7280;margin-bottom:28px;font-size:15px">From this hackathon prototype to a real app</p>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <div class="card" style="border-top:4px solid #6c63ff">
+        <div class="tag" style="background:#ede9fe;color:#4f46e5">Phase 1 — Now</div>
+        <h3>Hackathon Website ✅</h3>
+        <ul>
+          <li>Manual paste &amp; scan</li>
+          <li>Browser notifications</li>
+          <li>Live monitor simulation</li>
+          <li>Dashboard history</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid #3ddc84">
+        <div class="tag android-tag">Phase 2 — MVP</div>
+        <h3>Android App (Basic)</h3>
+        <ul>
+          <li>Real SMS reading</li>
+          <li>Auto background scan</li>
+          <li>Push notification alerts</li>
+          <li>React Native / Flutter</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid #d97706">
+        <div class="tag" style="background:#fffbeb;color:#b45309">Phase 3 — Growth</div>
+        <h3>Full Feature App</h3>
+        <ul>
+          <li>Incoming call detection</li>
+          <li>WhatsApp link scanner</li>
+          <li>On-device TFLite AI</li>
+          <li>Community scam DB</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid #007aff">
+        <div class="tag ios-tag">Phase 4 — Scale</div>
+        <h3>iOS + Bank Integration</h3>
+        <ul>
+          <li>iOS Call Directory</li>
+          <li>Bank API partnerships</li>
+          <li>RBI / NPCI data feed</li>
+          <li>Play Store launch</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: KEY SUMMARY -->
+  <section class="arch-section arch-section-alt">
+    <div class="container">
+      <div class="highlight-box">
+        <h3>🛡️ What the FraudShield App Will Do — Summary</h3>
+        <ul>
+          <li>Automatically read every SMS the moment it arrives — no manual pasting needed</li>
+          <li>Detect scam patterns (OTP, KYC, UPI fraud, phishing, fake customer care) in under 100ms</li>
+          <li>Show a notification on lock screen: "⚠️ Risk Score 92/100 — UPI Scam detected. [Check Details]"</li>
+          <li>Warn you about incoming calls from reported scam numbers before you answer</li>
+          <li>Block phishing links before they open in your browser</li>
+          <li>Work completely offline — AI runs on-device, your messages never leave your phone</li>
+          <li>Report confirmed scams to the community database to protect other users</li>
+          <li>All of this happens silently in the background — you don't need to open the app</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span>🛡️</span> <span class="logo-text">Fraud<span class="accent">Shield</span></span></div>
+        <p>India's AI-powered scam detection platform.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Pages</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="scan.html">Scan Message</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="report.html">Report Scam</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Report</h5>
+        <ul>
+          <li><a href="https://cybercrime.gov.in" target="_blank">Cyber Crime Portal</a></li>
+          <li><a href="tel:1930">1930 Helpline</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 FraudShield · Hackathon Project · Not affiliated with any financial institution</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
+
